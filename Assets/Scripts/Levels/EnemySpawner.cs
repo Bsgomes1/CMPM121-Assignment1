@@ -210,11 +210,33 @@ public class EnemySpawner : MonoBehaviour
     private void SpawnEnemy(Spawn spawn, int waveNumber)
     {
         SpawnPoint spawnPoint = GetSpawnPoint(spawn.Location);
-        Vector2 offset = UnityEngine.Random.insideUnitCircle * 1.8f;
-        Vector3 position = spawnPoint.transform.position + new Vector3(offset.x, offset.y, 0);
+        
+        // Vector2 offset = UnityEngine.Random.insideUnitCircle * 1.8f;
+        // Vector3 position = spawnPoint.transform.position + new Vector3(offset.x, offset.y, 0);
+
+        // GameObject newEnemy = Instantiate(enemy, position, Quaternion.identity);
+        // Enemy enemyData = this.enemyData[spawn.Enemy.ToLower()];
+        Vector3 position;
+        int maxAttempts = 10; // Maximum attempts to find a non-overlapping position
+        int attempts = 0;
+
+        do
+        {
+            Vector2 offset = UnityEngine.Random.insideUnitCircle * 1.8f;
+            position = spawnPoint.transform.position + new Vector3(offset.x, offset.y, 0);
+            attempts++;
+        }
+        while (Physics2D.OverlapCircle(position, 0.5f) != null && attempts < maxAttempts);
+
+        if (attempts >= maxAttempts)
+        {
+            Debug.LogWarning("Could not find a non-overlapping position for enemy spawn.");
+            return; // Skip spawning this enemy if no valid position is found
+        }
 
         GameObject newEnemy = Instantiate(enemy, position, Quaternion.identity);
         Enemy enemyData = this.enemyData[spawn.Enemy.ToLower()];
+
 
         float hp = RPNCalculator.Evaluate(spawn.HP ?? "base", new Dictionary<string, float>
         {
