@@ -4,7 +4,7 @@ using TMPro;
 public class MenuSelectorController : MonoBehaviour
 {
     public TextMeshProUGUI label;
-    public string level;
+    public Level level;
     public EnemySpawner spawner;
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -19,10 +19,10 @@ public class MenuSelectorController : MonoBehaviour
         
     }
 
-    public void SetLevel(string text)
+    public void SetLevel(Level newLevel)
     {
-        level = text;
-        label.text = text;
+        level = newLevel;
+        label.text = newLevel.Name;  
     }
 
     public void StartLevel()

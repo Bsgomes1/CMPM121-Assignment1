@@ -23,10 +23,21 @@ public class EnemySpawner : MonoBehaviour
     {
         LoadEnemyData("Assets/Resources/enemies.json");
         LoadLevelData("Assets/Resources/levels.json");
-        GameObject selector = Instantiate(button, level_selector.transform);
-        selector.transform.localPosition = new Vector3(0, 130);
-        selector.GetComponent<MenuSelectorController>().spawner = this;
-        selector.GetComponent<MenuSelectorController>().SetLevel("Start");
+        foreach (Level level in levels)
+        {
+            if (level.Name.ToLower() == "start") continue;
+
+            GameObject selector = Instantiate(button, level_selector.transform);
+            selector.transform.localPosition = new Vector3(0, 130); // You can remove this if you're using a Layout Group
+
+            MenuSelectorController controller = selector.GetComponent<MenuSelectorController>();
+            controller.spawner = this;
+            controller.SetLevel(level);
+        }
+        //GameObject selector = Instantiate(button, level_selector.transform);
+        //selector.transform.localPosition = new Vector3(0, 130);
+        //selector.GetComponent<MenuSelectorController>().spawner = this;
+        //selector.GetComponent<MenuSelectorController>().SetLevel(levels[0]);
     }
 
     private void LoadEnemyData(string filePath)
@@ -47,18 +58,20 @@ public class EnemySpawner : MonoBehaviour
         levels = JsonConvert.DeserializeObject<List<Level>>(json);
     }
 
-    public void StartLevel(string levelname)
+    public void StartLevel(Level level)
     {
         level_selector.gameObject.SetActive(false);
 
         // Find the level by name
-        currentLevel = levels.FirstOrDefault(level => level.Name == levelname);
+        currentLevel = level;
+
         if (currentLevel == null)
         {
-            Debug.LogError($"Level '{levelname}' not found!");
+            Debug.LogError("Level is null!");
             return;
         }
 
+        Debug.Log("Starting level: " + currentLevel.Name);
         currentWave = 1; // Start at wave 1
         GameManager.Instance.player.GetComponent<PlayerController>().StartLevel();
         StartCoroutine(SpawnWave(currentLevel, currentWave));
