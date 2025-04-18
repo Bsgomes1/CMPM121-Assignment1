@@ -21,6 +21,7 @@ public class EnemySpawner : MonoBehaviour
 
     void Start()
     {
+        int x = -200;
         LoadEnemyData("Assets/Resources/enemies.json");
         LoadLevelData("Assets/Resources/levels.json");
         foreach (Level level in levels)
@@ -28,11 +29,12 @@ public class EnemySpawner : MonoBehaviour
             if (level.Name.ToLower() == "start") continue;
 
             GameObject selector = Instantiate(button, level_selector.transform);
-            selector.transform.localPosition = new Vector3(0, 130); // You can remove this if you're using a Layout Group
+            selector.transform.localPosition = new Vector3(x, 130); // You can remove this if you're using a Layout Group
 
             MenuSelectorController controller = selector.GetComponent<MenuSelectorController>();
             controller.spawner = this;
             controller.SetLevel(level);
+            x = x + 200;
         }
         //GameObject selector = Instantiate(button, level_selector.transform);
         //selector.transform.localPosition = new Vector3(0, 130);
